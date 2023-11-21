@@ -14,6 +14,17 @@ cmake_policy(SET CMP0094 NEW)
 # don't relink it only the shared object changes
 set(CMAKE_LINK_DEPENDS_NO_SHARED ON)
 
+# Vcpkg setup
+set(QGIS_VCPKG_VERSION "2023.07.21") # Update default-registry baseline in vcpkg-configuration.json when changing!
+
+include(cmake/vcpkg_setup.cmake)
+
+# Dang that does not work
+#include(${CMAKE_CURRENT_BINARY_DIR}/vcpkg/scripts/ports.cmake)
+#include(${CMAKE_CURRENT_BINARY_DIR}/vcpkg/scripts/cmake/vcpkg_find_acquire_program.cmake)
+#vcpkg_find_acquire_program(FLEX)
+#vcpkg_find_acquire_program(BISON)
+
 #############################################################
 # Project and version
 set(CPACK_PACKAGE_VERSION_MAJOR "3")
@@ -150,19 +161,19 @@ if(WITH_CORE)
 
   if(WITH_DESKTOP)
       if((WIN32 AND NOT MINGW) OR (UNIX AND NOT APPLE AND NOT ANDROID AND NOT IOS))
-	set (CRASH_HANDLER_AVAILABLE TRUE)
+  set (CRASH_HANDLER_AVAILABLE TRUE)
       else()
-	set (CRASH_HANDLER_AVAILABLE FALSE)
+  set (CRASH_HANDLER_AVAILABLE FALSE)
       endif()
 
       set (WITH_CRASH_HANDLER ${CRASH_HANDLER_AVAILABLE} CACHE BOOL "Determines whether the QGIS crash handler application should be built")
       if(WITH_CRASH_HANDLER AND NOT CRASH_HANDLER_AVAILABLE)
-	message(FATAL_ERROR "Crash handler cannot be built on this environment. Set WITH_CRASH_HANDLER to false.")
+  message(FATAL_ERROR "Crash handler cannot be built on this environment. Set WITH_CRASH_HANDLER to false.")
       endif()
       if(WITH_CRASH_HANDLER)
-	set (HAVE_CRASH_HANDLER TRUE)    # used in qgsconfig.h
+  set (HAVE_CRASH_HANDLER TRUE)    # used in qgsconfig.h
       else()
-	set (HAVE_CRASH_HANDLER FALSE)    # used in qgsconfig.h
+  set (HAVE_CRASH_HANDLER FALSE)    # used in qgsconfig.h
       endif()
   endif()
 
@@ -698,7 +709,7 @@ endif()
 set (AGGRESSIVE_SAFE_MODE FALSE CACHE BOOL "Forces a aggressive safe mode where issues like unsafe thread access will resort in fatal exceptions")
 
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8 /std:c++17")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8 /std:c++17 /bigobj /EHsc")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /utf-8 /std:c++17")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -758,6 +769,8 @@ if (WITH_CORE)
 
       # Turn on defines for non standard maths stuff
       add_definitions(-D_USE_MATH_DEFINES)
+
+      add_definitions(-DWIN32)
 
       # Turn off deprecation warnings
       add_definitions(-D_CRT_SECURE_NO_WARNINGS)

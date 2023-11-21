@@ -1,0 +1,51 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "vs-default",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Visual Studio 17 2022",
+      "cacheVariables": {
+        "FLEX_EXECUTABLE": "H:/src/vcpkg/downloads/tools/win_flex/2.5.25/flex.exe",
+        "BISON_EXECUTABLE": "H:/src/vcpkg/downloads/tools/win_flex/2.5.25/bison.exe",
+        "WITH_QTWEBKIT": false,
+        "WITH_QSCIAPI": false,
+        "CMAKE_INSTALL_PREFIX": "h:/src/qgis/install",
+      }
+    },
+    {
+      "name": "vs-multi",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Ninja Multi-Config",
+      "inherits": "vs-default"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug-Multi",
+      "configurePreset": "vs-multi",
+      "configuration": "Debug"
+    },
+    {
+      "name": "Release-Multi",
+      "configurePreset": "vs-multi",
+      "configuration": "Release"
+    },
+    {
+      "name": "RelWithDebInfo-Multi",
+      "configurePreset": "vs-multi",
+      "configuration": "RelWithDebInfo"
+    }
+  ]
+}
